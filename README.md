@@ -8,13 +8,8 @@ Install the dependencies (macOS):
 
 ```sh
 brew bundle
+brew services start ollama
+ollama pull mxbai-embed-large
 ```
 
-Python deps:
-
-``` sh
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
 
