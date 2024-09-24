@@ -1,0 +1,11 @@
+[package]
+name = "llm-git-commits"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chromadb = "0.5.0"
+git2 = "0.19.0"
+ollama-rs = "0.1.6"
