@@ -30,19 +30,16 @@ fn walk_git_log() -> Result<Vec<String>, Box<dyn Error>> {
         .collect())
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let chroma_client: ChromaClient = ChromaClient::new(Default::default());
-    let collection: ChromaCollection =
-        chroma_client.get_or_create_collection("commit_collection", None)?;
-    let ollama = Ollama::default();
-
-    for commit_enum in walk_git_log()
-        .expect("error getting git log")
+async fn feed_gitlog_to_ollama(
+    collection: ChromaCollection,
+    ollama_client: Ollama,
+    git_log: Vec<String>
+) {
+    for commit_enum in git_log
         .into_iter()
         .enumerate()
     {
-        let embeddings = ollama
+        let embeddings = ollama_client
             .generate_embeddings(
                 "mxbai-embed-large".to_string(),
                 commit_enum.1.to_string(),
@@ -64,5 +61,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
             None,
         );
     }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let chroma_client: ChromaClient = ChromaClient::new(Default::default());
+    let collection: ChromaCollection =
+        chroma_client.get_or_create_collection("commit_collection", None)?;
+    let ollama = Ollama::default();
+    feed_gitlog_to_ollama(
+        collection,
+        ollama,
+        walk_git_log().expect("error walking git log")
+    );
     Ok(())
 }
